@@ -1,4 +1,3 @@
-import { runWorker } from './runner.js';
 import { updateJob, failJob } from '../database/repositories/jobRepository.js';
 import { sendMessage } from '../lib/sqs.js';
 import { publish } from '../lib/sns.js';
@@ -13,7 +12,7 @@ const log = childLogger('worker:orchestrator');
  * decides which stage queue runs next — every other worker is a pure stage
  * function that reports its outcome here as an event.
  */
-const handle = async (event: OrchestratorEvent): Promise<void> => {
+export const handle = async (event: OrchestratorEvent): Promise<void> => {
   try {
     switch (event.type) {
       case 'JOB_CREATED': {
@@ -110,12 +109,3 @@ const handle = async (event: OrchestratorEvent): Promise<void> => {
     throw err;
   }
 };
-
-export const start = (): Promise<void> =>
-  runWorker<OrchestratorEvent>({
-    name: 'orchestrator',
-    queueUrl: config.ORCHESTRATOR_QUEUE_URL,
-    handler: handle,
-  });
-
-export default { start };

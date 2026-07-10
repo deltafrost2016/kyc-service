@@ -1,4 +1,3 @@
-import { runWorker } from './runner.js';
 import { extractDocument } from '../services/extractionService.js';
 import { failJob } from '../database/repositories/jobRepository.js';
 import { upsert as upsertAnalysis } from '../database/repositories/analysisRepository.js';
@@ -16,7 +15,7 @@ const log = childLogger('worker:extract');
  * orchestrator, which owns job-state updates and routing.
  * The raw S3 object is deleted immediately after extraction.
  */
-const handle = async ({
+export const handle = async ({
   jobId,
   s3Key,
   mimeType,
@@ -67,12 +66,3 @@ const handle = async ({
     throw err;
   }
 };
-
-export const start = (): Promise<void> =>
-  runWorker<AnalyseMessage>({
-    name: 'extract',
-    queueUrl: config.ANALYSE_QUEUE_URL,
-    handler: handle,
-  });
-
-export default { start };

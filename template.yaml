@@ -1,0 +1,149 @@
+# Local dev tooling only (sam local / sam build) — NOT a production deployment
+# artifact; production IaC is owned elsewhere. This template exists purely so
+# `sam build` (esbuild) and `sam local invoke` / `sam local start-api` can
+# exercise the same six Lambda handlers (src/lambda/*Handler.ts) that will
+# eventually be packaged (zip + esbuild) for real deployment by that separate
+# IaC. Local env values (LocalStack endpoints, dummy creds) live in env.json,
+# not here — pass them with `--env-vars env.json`. LocalStack hostnames only
+# resolve if the SAM local container joins the docker-compose network, e.g.:
+#   sam local invoke DedupFunction --docker-network kyc-service_default --env-vars env.json -e events/dedup-sample.json
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  kyc-service Lambda functions (local-dev SAM template only).
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 30
+    MemorySize: 256
+
+Resources:
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/lambda/apiHandler.handler
+      Events:
+        Api:
+          Type: HttpApi
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: 'node20'
+        Format: esm
+        EntryPoints:
+          - src/lambda/apiHandler.ts
+        OutExtension:
+          .js: .mjs
+
+  OrchestratorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/lambda/orchestratorHandler.handler
+      Events:
+        Sqs:
+          Type: SQS
+          Properties:
+            Queue: !Sub 'arn:aws:sqs:${AWS::Region}:000000000000:orchestrator-queue'
+            BatchSize: 5
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: 'node20'
+        Format: esm
+        EntryPoints:
+          - src/lambda/orchestratorHandler.ts
+        OutExtension:
+          .js: .mjs
+
+  DedupFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/lambda/dedupHandler.handler
+      Events:
+        Sqs:
+          Type: SQS
+          Properties:
+            Queue: !Sub 'arn:aws:sqs:${AWS::Region}:000000000000:dedup-queue'
+            BatchSize: 5
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: 'node20'
+        Format: esm
+        EntryPoints:
+          - src/lambda/dedupHandler.ts
+        OutExtension:
+          .js: .mjs
+
+  ExtractFunction:
+    Type: AWS::Serverless::Function
+    # Timeout/BatchSize overridden (vs. the shared Globals) because this stage
+    # processes SQS records sequentially and each one is a Gemini Vision call —
+    # the slowest, most latency-variable stage in the pipeline — so a batch of
+    # 5 sequential calls needs more headroom than the 30s default to avoid
+    # timing out mid-batch and redriving already-succeeded records.
+    Properties:
+      Handler: src/lambda/extractHandler.handler
+      Timeout: 120
+      Events:
+        Sqs:
+          Type: SQS
+          Properties:
+            Queue: !Sub 'arn:aws:sqs:${AWS::Region}:000000000000:analyse-queue'
+            BatchSize: 2
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: 'node20'
+        Format: esm
+        EntryPoints:
+          - src/lambda/extractHandler.ts
+        OutExtension:
+          .js: .mjs
+
+  RulesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/lambda/rulesHandler.handler
+      Events:
+        Sqs:
+          Type: SQS
+          Properties:
+            Queue: !Sub 'arn:aws:sqs:${AWS::Region}:000000000000:rules-queue'
+            BatchSize: 5
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: 'node20'
+        Format: esm
+        EntryPoints:
+          - src/lambda/rulesHandler.ts
+        OutExtension:
+          .js: .mjs
+
+  ConfidenceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/lambda/confidenceHandler.handler
+      Events:
+        Sqs:
+          Type: SQS
+          Properties:
+            Queue: !Sub 'arn:aws:sqs:${AWS::Region}:000000000000:confidence-queue'
+            BatchSize: 5
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: 'node20'
+        Format: esm
+        EntryPoints:
+          - src/lambda/confidenceHandler.ts
+        OutExtension:
+          .js: .mjs

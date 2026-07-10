@@ -1,4 +1,3 @@
-import { runWorker } from './runner.js';
 import { scoreConfidence } from '../domain/confidence.js';
 import { getJob, failJob } from '../database/repositories/jobRepository.js';
 import { sendMessage } from '../lib/sqs.js';
@@ -13,7 +12,7 @@ const log = childLogger('worker:confidence');
  * and reports the result to the orchestrator, which marks the job DONE and
  * publishes to the analysis-complete SNS topic.
  */
-const handle = async ({ jobId }: JobStageMessage): Promise<void> => {
+export const handle = async ({ jobId }: JobStageMessage): Promise<void> => {
   try {
     const job = await getJob(jobId);
     if (!job || !job.extracted || !job.rule_results) {
@@ -41,12 +40,3 @@ const handle = async ({ jobId }: JobStageMessage): Promise<void> => {
     throw err;
   }
 };
-
-export const start = (): Promise<void> =>
-  runWorker<JobStageMessage>({
-    name: 'confidence',
-    queueUrl: config.CONFIDENCE_QUEUE_URL,
-    handler: handle,
-  });
-
-export default { start };

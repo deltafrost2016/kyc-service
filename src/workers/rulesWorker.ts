@@ -1,4 +1,3 @@
-import { runWorker } from './runner.js';
 import { runRules } from '../domain/rules/index.js';
 import { getJob, failJob } from '../database/repositories/jobRepository.js';
 import { sendMessage } from '../lib/sqs.js';
@@ -14,7 +13,7 @@ const log = childLogger('worker:rules');
  * orchestrator, which owns job-state updates and routing. Identical for
  * fresh and cache-hit jobs (only extraction differed).
  */
-const handle = async ({ jobId }: JobStageMessage): Promise<void> => {
+export const handle = async ({ jobId }: JobStageMessage): Promise<void> => {
   try {
     const job = await getJob(jobId);
     if (!job || !job.extracted) {
@@ -40,12 +39,3 @@ const handle = async ({ jobId }: JobStageMessage): Promise<void> => {
     throw err;
   }
 };
-
-export const start = (): Promise<void> =>
-  runWorker<JobStageMessage>({
-    name: 'rules',
-    queueUrl: config.RULES_QUEUE_URL,
-    handler: handle,
-  });
-
-export default { start };

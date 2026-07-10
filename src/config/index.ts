@@ -46,10 +46,15 @@ const schema = z.object({
   GCP_PROJECT: z.string().optional(),
   GCP_LOCATION: z.string().default('us-central1'),
 
-  // Worker tuning
-  WORKER_WAIT_TIME_SECONDS: z.coerce.number().default(20),
-  WORKER_MAX_MESSAGES: z.coerce.number().default(5),
-  WORKER_VISIBILITY_TIMEOUT: z.coerce.number().default(60),
+  // Postgres connection pool. Sized for Lambda-per-invocation: each warm
+  // container handles one invocation at a time, but many containers can run
+  // concurrently, so per-container pools must stay small and release idle
+  // connections quickly (a container can freeze mid-connection between
+  // invocations).
+  DB_POOL_MAX: z.coerce.number().default(2),
+  DB_POOL_MIN: z.coerce.number().default(0),
+  DB_POOL_IDLE_MS: z.coerce.number().default(1000),
+  DB_POOL_ACQUIRE_MS: z.coerce.number().default(30000),
 });
 
 export type Config = z.infer<typeof schema>;

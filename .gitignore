@@ -4,6 +4,7 @@ npm-debug.log*
 coverage/
 .DS_Store
 *.log
+.aws-sam/
 
 # Claude Code local-only settings (machine-specific permissions/paths)
 .claude/settings.local.json

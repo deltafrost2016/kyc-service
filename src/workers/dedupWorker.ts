@@ -1,4 +1,3 @@
-import { runWorker } from './runner.js';
 import { resolveDedup } from '../services/dedupService.js';
 import { failJob } from '../database/repositories/jobRepository.js';
 import { sendMessage } from '../lib/sqs.js';
@@ -13,7 +12,7 @@ const log = childLogger('worker:dedup');
  * dedup-queue handler. Pure stage: resolves cache hit/miss and reports the
  * outcome to the orchestrator, which owns job-state updates and routing.
  */
-const handle = async ({ jobId, s3Key, mimeType, contentHash }: DedupMessage): Promise<void> => {
+export const handle = async ({ jobId, s3Key, mimeType, contentHash }: DedupMessage): Promise<void> => {
   try {
     const base64 = await s3.getBase64(s3Key);
     const result = await resolveDedup({
@@ -55,12 +54,3 @@ const handle = async ({ jobId, s3Key, mimeType, contentHash }: DedupMessage): Pr
     throw err;
   }
 };
-
-export const start = (): Promise<void> =>
-  runWorker<DedupMessage>({
-    name: 'dedup',
-    queueUrl: config.DEDUP_QUEUE_URL,
-    handler: handle,
-  });
-
-export default { start };
