@@ -1,0 +1,10 @@
+// Read as CommonJS by sequelize-cli's own require() call regardless of the
+// project's "type": "module" — see migrations/package.json for how the
+// generated migration files themselves stay CommonJS too.
+const path = require('path');
+
+module.exports = {
+  config: path.resolve('config', 'sequelize-cli.cjs'),
+  'migrations-path': path.resolve('src/database/migrations'),
+  'seeders-path': path.resolve('src/database/seeders'),
+};

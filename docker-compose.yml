@@ -1,0 +1,113 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: docanalysis
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d docanalysis']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  localstack:
+    image: localstack/localstack:3
+    environment:
+      SERVICES: sqs,sns,s3
+      DEFAULT_REGION: us-east-1
+    ports:
+      - '4566:4566'
+    volumes:
+      - ./localstack/init-resources.sh:/etc/localstack/init/ready.d/init-resources.sh
+    healthcheck:
+      test: ['CMD-SHELL', 'awslocal sqs list-queues || exit 1']
+      interval: 6s
+      timeout: 5s
+      retries: 15
+
+  migrate:
+    build: .
+    command:
+      - /app/node_modules/.bin/sequelize-cli
+      - db:migrate
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/docanalysis
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-1408}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    build: .
+    command: ['/app/node_modules/.bin/tsx', 'src/index.ts', 'api']
+    env_file: .env
+    environment: &aws-env
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/docanalysis
+      AWS_ENDPOINT_URL: http://localstack:4566
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      ORCHESTRATOR_QUEUE_URL: http://localstack:4566/000000000000/orchestrator-queue
+      DEDUP_QUEUE_URL: http://localstack:4566/000000000000/dedup-queue
+      ANALYSE_QUEUE_URL: http://localstack:4566/000000000000/analyse-queue
+      RULES_QUEUE_URL: http://localstack:4566/000000000000/rules-queue
+      CONFIDENCE_QUEUE_URL: http://localstack:4566/000000000000/confidence-queue
+      ANALYSIS_COMPLETE_TOPIC_ARN: arn:aws:sns:us-east-1:000000000000:analysis-complete
+      STAGING_BUCKET: doc-staging
+    ports:
+      - '3000:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  worker-orchestrator:
+    build: .
+    command: ['/app/node_modules/.bin/tsx', 'src/index.ts', 'orchestrator']
+    env_file: .env
+    environment: *aws-env
+    depends_on:
+      api:
+        condition: service_started
+
+  worker-dedup:
+    build: .
+    command: ['/app/node_modules/.bin/tsx', 'src/index.ts', 'dedup']
+    env_file: .env
+    environment: *aws-env
+    depends_on:
+      api:
+        condition: service_started
+
+  worker-extract:
+    build: .
+    command: ['/app/node_modules/.bin/tsx', 'src/index.ts', 'extract']
+    env_file: .env
+    environment: *aws-env
+    depends_on:
+      api:
+        condition: service_started
+
+  worker-rules:
+    build: .
+    command: ['/app/node_modules/.bin/tsx', 'src/index.ts', 'rules']
+    env_file: .env
+    environment: *aws-env
+    depends_on:
+      api:
+        condition: service_started
+
+  worker-confidence:
+    build: .
+    command: ['/app/node_modules/.bin/tsx', 'src/index.ts', 'confidence']
+    env_file: .env
+    environment: *aws-env
+    depends_on:
+      api:
+        condition: service_started

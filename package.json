@@ -1,0 +1,57 @@
+{
+  "name": "kyc-service",
+  "version": "1.0.0",
+  "description": "Async Indian identity document analysis service (Express + Gemini Vision + SQS/SNS + pgvector RAG dedup)",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "start:api": "tsx src/index.ts api",
+    "start:orchestrator": "tsx src/index.ts orchestrator",
+    "start:dedup": "tsx src/index.ts dedup",
+    "start:extract": "tsx src/index.ts extract",
+    "start:rules": "tsx src/index.ts rules",
+    "start:confidence": "tsx src/index.ts confidence",
+    "dev:api": "tsx watch src/index.ts api",
+    "migrate": "sequelize-cli db:migrate",
+    "migrate:undo": "sequelize-cli db:migrate:undo",
+    "migrate:create": "sequelize-cli migration:generate --name",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.658.0",
+    "@aws-sdk/client-sns": "^3.658.0",
+    "@aws-sdk/client-sqs": "^3.658.0",
+    "@google/genai": "^0.3.0",
+    "express": "^4.21.0",
+    "google-auth-library": "^9.14.0",
+    "pg": "^8.13.0",
+    "pino": "^9.4.0",
+    "pino-pretty": "^11.2.2",
+    "sequelize": "^6.37.3",
+    "tsx": "^4.19.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.16.0",
+    "@types/pg": "^8.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "prettier": "^3.9.4",
+    "sequelize-cli": "^6.6.5",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.1"
+  }
+}
