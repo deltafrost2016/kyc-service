@@ -1,19 +1,13 @@
 import pino, { type Logger } from 'pino';
-import config from '../config/index.js';
+import config from '../config/index';
 
-const isDev = config.NODE_ENV !== 'production';
-
+// Plain structured-JSON pino. No `pino-pretty` transport: pino transports run
+// in a worker thread and resolve the target module at runtime, which esbuild's
+// single-file Lambda bundle (no node_modules) cannot satisfy ("unable to
+// determine transport target for pino-pretty"). JSON is also the right format
+// for CloudWatch/Lambda log ingestion anyway.
 export const logger: Logger = pino({
   level: config.LOG_LEVEL,
-  transport: isDev
-    ? {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-          translateTime: 'SYS:standard',
-        },
-      }
-    : undefined,
 });
 
 /** Child logger scoped to a component (e.g. a worker or route). */

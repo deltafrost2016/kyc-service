@@ -1,10 +1,10 @@
-import { generateJson } from '../lib/gemini.js';
+import { generateJson } from '../lib/gemini';
 import {
   extractedZodSchema,
   geminiResponseSchema,
   type Extracted,
-} from '../domain/extractionSchema.js';
-import { DOCUMENT_TYPES, type DocumentType } from '../domain/documentTypes.js';
+} from '../domain/extractionSchema';
+import { DOCUMENT_TYPES, type DocumentType } from '../domain/documentTypes';
 
 const PROMPT = `You are an OCR extraction engine for Indian identity documents.
 The image is one of: UIDAI Aadhaar, Passport, Driving Licence, or PAN card.

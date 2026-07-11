@@ -1,6 +1,6 @@
-import { Job } from '../models/Job.js';
-import type { JobRow } from '../../types.js';
-import { pickUpdatableFields, buildFailedJobPatch, type JobUpdate } from './jobUtils.js';
+import { Job } from '../models/Job';
+import type { JobRow } from '../../types';
+import { pickUpdatableFields, buildFailedJobPatch, type JobUpdate } from './jobUtils';
 
 export type { JobUpdate };
 

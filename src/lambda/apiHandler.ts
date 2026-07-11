@@ -1,5 +1,5 @@
 import { configure as serverlessExpress } from '@codegenie/serverless-express';
-import { createApp } from '../api/server.js';
+import { createApp } from '../api/server';
 
 /**
  * API Gateway HTTP API (v2 proxy) adapter. Wraps the same `createApp()` used

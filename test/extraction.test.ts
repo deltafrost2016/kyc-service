@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('../src/lib/gemini.js', () => ({
+vi.mock('../src/lib/gemini', () => ({
   generateJson: vi.fn(),
 }));
 
-import { extractDocument } from '../src/services/extractionService.js';
-import { generateJson } from '../src/lib/gemini.js';
-import { extractedZodSchema } from '../src/domain/extractionSchema.js';
+import { extractDocument } from '../src/services/extractionService';
+import { generateJson } from '../src/lib/gemini';
+import { extractedZodSchema } from '../src/domain/extractionSchema';
 
 const base = {
   documentNumber: 'A1234567',

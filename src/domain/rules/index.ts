@@ -1,13 +1,13 @@
-import * as dob from './dob.js';
-import * as validity from './validity.js';
-import * as name from './name.js';
-import * as motherName from './motherName.js';
-import * as address from './address.js';
-import * as documentType from './documentType.js';
-import type { Extracted } from '../extractionSchema.js';
-import type { Rule, RuleContext, RuleOutcome, RuleCheck, RuleResults } from './types.js';
+import * as dob from './dob';
+import * as validity from './validity';
+import * as name from './name';
+import * as motherName from './motherName';
+import * as address from './address';
+import * as documentType from './documentType';
+import type { Extracted } from '../extractionSchema';
+import type { Rule, RuleContext, RuleOutcome, RuleCheck, RuleResults } from './types';
 
-export type { Rule, RuleContext, RuleOutcome, RuleCheck, RuleResults } from './types.js';
+export type { Rule, RuleContext, RuleOutcome, RuleCheck, RuleResults } from './types';
 
 /**
  * Rule registry. Add a rule = add a module here (OCP). Each rule exports

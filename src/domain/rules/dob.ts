@@ -1,6 +1,6 @@
-import { parseISODate, yearsBetween } from './dateUtils.js';
-import type { Extracted } from '../extractionSchema.js';
-import type { RuleContext, RuleOutcome } from './types.js';
+import { parseISODate, yearsBetween } from './dateUtils';
+import type { Extracted } from '../extractionSchema';
+import type { RuleContext, RuleOutcome } from './types';
 
 export const field = 'dateOfBirth';
 

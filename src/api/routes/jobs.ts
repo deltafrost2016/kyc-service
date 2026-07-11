@@ -1,5 +1,5 @@
 import { Router, type Request, type Response, type NextFunction } from 'express';
-import { getJob } from '../../database/repositories/jobRepository.js';
+import { getJob } from '../../database/repositories/jobRepository';
 
 const router = Router();
 

@@ -4,7 +4,7 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
-import config from '../config/index.js';
+import config from '../config/index';
 
 /**
  * S3 staging for raw base64 documents (keeps SQS payloads small and PII out of

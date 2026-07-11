@@ -1,4 +1,4 @@
-import type { Extracted } from '../extractionSchema.js';
+import type { Extracted } from '../extractionSchema';
 
 /** Context passed to every rule (currently just the reference "now"). */
 export interface RuleContext {

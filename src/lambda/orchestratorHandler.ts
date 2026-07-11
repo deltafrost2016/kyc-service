@@ -1,5 +1,5 @@
-import { createSqsBatchHandler } from './sqsBatchHandler.js';
-import { handle } from '../workers/orchestratorWorker.js';
-import type { OrchestratorEvent } from '../types.js';
+import { createSqsBatchHandler } from './sqsBatchHandler';
+import { handle } from '../workers/orchestratorWorker';
+import type { OrchestratorEvent } from '../types';
 
 export const handler = createSqsBatchHandler<OrchestratorEvent>(handle);

@@ -1,11 +1,11 @@
 import { Router, type Request, type Response, type NextFunction } from 'express';
 import { z } from 'zod';
-import { sha256 } from '../../lib/hash.js';
-import * as s3 from '../../lib/s3.js';
-import { sendMessage } from '../../lib/sqs.js';
-import { createJob } from '../../database/repositories/jobRepository.js';
-import config from '../../config/index.js';
-import { childLogger } from '../../lib/logger.js';
+import { sha256 } from '../../lib/hash';
+import * as s3 from '../../lib/s3';
+import { sendMessage } from '../../lib/sqs';
+import { createJob } from '../../database/repositories/jobRepository';
+import config from '../../config/index';
+import { childLogger } from '../../lib/logger';
 
 const log = childLogger('api:analyse');
 const router = Router();

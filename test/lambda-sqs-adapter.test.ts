@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SQSEvent, SQSRecord } from 'aws-lambda';
-import { createSqsBatchHandler } from '../src/lambda/sqsBatchHandler.js';
+import { createSqsBatchHandler } from '../src/lambda/sqsBatchHandler';
 
 // Only the fields the adapter actually reads (`messageId`, `body`) are populated;
 // the rest are cast through `as unknown as SQSRecord` to keep the fixture minimal.

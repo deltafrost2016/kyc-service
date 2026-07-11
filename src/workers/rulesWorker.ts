@@ -1,9 +1,9 @@
-import { runRules } from '../domain/rules/index.js';
-import { getJob, failJob } from '../database/repositories/jobRepository.js';
-import { sendMessage } from '../lib/sqs.js';
-import config from '../config/index.js';
-import { childLogger } from '../lib/logger.js';
-import type { JobStageMessage } from '../types.js';
+import { runRules } from '../domain/rules/index';
+import { getJob, failJob } from '../database/repositories/jobRepository';
+import { sendMessage } from '../lib/sqs';
+import config from '../config/index';
+import { childLogger } from '../lib/logger';
+import type { JobStageMessage } from '../types';
 
 const log = childLogger('worker:rules');
 

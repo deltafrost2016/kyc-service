@@ -1,5 +1,5 @@
-import { createSqsBatchHandler } from './sqsBatchHandler.js';
-import { handle } from '../workers/rulesWorker.js';
-import type { JobStageMessage } from '../types.js';
+import { createSqsBatchHandler } from './sqsBatchHandler';
+import { handle } from '../workers/rulesWorker';
+import type { JobStageMessage } from '../types';
 
 export const handler = createSqsBatchHandler<JobStageMessage>(handle);

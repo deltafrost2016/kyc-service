@@ -1,7 +1,7 @@
-import { embed } from '../lib/embeddings.js';
-import { findByHash, findNearest, upsert } from '../database/repositories/analysisRepository.js';
-import config from '../config/index.js';
-import type { DedupResult } from '../types.js';
+import { embed } from '../lib/embeddings';
+import { findByHash, findNearest, upsert } from '../database/repositories/analysisRepository';
+import config from '../config/index';
+import type { DedupResult } from '../types';
 
 export type { DedupResult };
 

@@ -1,5 +1,5 @@
-import type { Extracted } from '../extractionSchema.js';
-import type { RuleOutcome } from './types.js';
+import type { Extracted } from '../extractionSchema';
+import type { RuleOutcome } from './types';
 
 export const field = 'address';
 

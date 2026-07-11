@@ -1,5 +1,5 @@
-import { isKnownDocumentType } from '../documentTypes.js';
-import type { RuleOutcome } from './types.js';
+import { isKnownDocumentType } from '../documentTypes';
+import type { RuleOutcome } from './types';
 
 export const field = 'documentType';
 

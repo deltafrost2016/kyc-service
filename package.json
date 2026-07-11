@@ -2,7 +2,7 @@
   "name": "kyc-service",
   "version": "1.0.0",
   "description": "Async Indian identity document analysis service (Express + Gemini Vision + SQS/SNS + pgvector RAG dedup)",
-  "type": "module",
+  "type": "commonjs",
   "engines": {
     "node": ">=20"
   },
@@ -16,8 +16,17 @@
     "lint": "eslint src --ext .ts",
     "format": "prettier --write .",
     "sam:build": "sam build",
+    "generate:env-json": "node scripts/generate-env-json.js",
+    "presam:local:api": "npm run generate:env-json",
     "sam:local:api": "sam local start-api --docker-network kyc-service_default --env-vars env.json",
-    "sam:local:invoke:dedup": "sam local invoke DedupFunction --docker-network kyc-service_default --env-vars env.json -e events/dedup-sample.json"
+    "presam:local:invoke:dedup": "npm run generate:env-json",
+    "sam:local:invoke:dedup": "sam local invoke DedupFunction --docker-network kyc-service_default --env-vars env.json -e events/dedup-sample.json",
+    "presam:local:invoke:extract": "npm run generate:env-json",
+    "sam:local:invoke:extract": "sam local invoke ExtractFunction --docker-network kyc-service_default --env-vars env.json -e events/extract-sample.json",
+    "presam:local:invoke:rules": "npm run generate:env-json",
+    "sam:local:invoke:rules": "sam local invoke RulesFunction --docker-network kyc-service_default --env-vars env.json -e events/rules-sample.json",
+    "presam:local:invoke:confidence": "npm run generate:env-json",
+    "sam:local:invoke:confidence": "sam local invoke ConfidenceFunction --docker-network kyc-service_default --env-vars env.json -e events/confidence-sample.json"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.658.0",
@@ -25,6 +34,7 @@
     "@aws-sdk/client-sqs": "^3.658.0",
     "@codegenie/serverless-express": "^4.17.1",
     "@google/genai": "^0.3.0",
+    "dotenv": "^17.4.2",
     "express": "^4.21.0",
     "google-auth-library": "^9.14.0",
     "pg": "^8.13.0",

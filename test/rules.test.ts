@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { runRules } from '../src/domain/rules/index.js';
-import * as dob from '../src/domain/rules/dob.js';
-import * as validity from '../src/domain/rules/validity.js';
-import * as motherName from '../src/domain/rules/motherName.js';
-import * as address from '../src/domain/rules/address.js';
-import * as documentType from '../src/domain/rules/documentType.js';
-import type { Extracted } from '../src/domain/extractionSchema.js';
+import { runRules } from '../src/domain/rules/index';
+import * as dob from '../src/domain/rules/dob';
+import * as validity from '../src/domain/rules/validity';
+import * as motherName from '../src/domain/rules/motherName';
+import * as address from '../src/domain/rules/address';
+import * as documentType from '../src/domain/rules/documentType';
+import type { Extracted } from '../src/domain/extractionSchema';
 
 const NOW = new Date('2026-07-02T00:00:00Z');
 const ctx = { now: NOW };

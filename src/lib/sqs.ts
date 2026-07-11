@@ -1,5 +1,5 @@
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
-import config from '../config/index.js';
+import config from '../config/index';
 
 /**
  * SQS client + the helper workers/API routes actually use (send).

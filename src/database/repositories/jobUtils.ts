@@ -1,6 +1,6 @@
-import type { Extracted } from '../../domain/extractionSchema.js';
-import type { RuleResults } from '../../domain/rules/types.js';
-import type { Confidence } from '../../domain/confidence.js';
+import type { Extracted } from '../../domain/extractionSchema';
+import type { RuleResults } from '../../domain/rules/types';
+import type { Confidence } from '../../domain/confidence';
 
 /** Columns that may be updated via updateJob. */
 export interface JobUpdate {

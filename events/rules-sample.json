@@ -1,9 +1,9 @@
 {
   "Records": [
     {
-      "messageId": "11111111-1111-1111-1111-111111111111",
+      "messageId": "44444444-4444-4444-4444-444444444444",
       "receiptHandle": "sample-receipt-handle",
-      "body": "{\"jobId\":\"610c3a5d-fdeb-435c-96ac-3ae1494aefea\",\"s3Key\":\"staging/610c3a5d-fdeb-435c-96ac-3ae1494aefea\",\"mimeType\":\"image/png\",\"contentHash\":\"bcc92d5948af4439f8c0733c2e08ea3c25b5a7dc6fc39b74f7ad14636c182f7b\"}",
+      "body": "{\"jobId\":\"610c3a5d-fdeb-435c-96ac-3ae1494aefea\"}",
       "attributes": {
         "ApproximateReceiveCount": "1",
         "SentTimestamp": "1700000000000",
@@ -13,7 +13,7 @@
       "messageAttributes": {},
       "md5OfBody": "sample-md5",
       "eventSource": "aws:sqs",
-      "eventSourceARN": "arn:aws:sqs:ap-south-1:000000000000:dedup-queue",
+      "eventSourceARN": "arn:aws:sqs:ap-south-1:000000000000:rules-queue",
       "awsRegion": "ap-south-1"
     }
   ]

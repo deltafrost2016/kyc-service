@@ -1,9 +1,9 @@
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import type { Server } from 'node:http';
-import analyseRoute from './routes/analyse.js';
-import jobsRoute from './routes/jobs.js';
-import { childLogger } from '../lib/logger.js';
-import config from '../config/index.js';
+import analyseRoute from './routes/analyse';
+import jobsRoute from './routes/jobs';
+import { childLogger } from '../lib/logger';
+import config from '../config/index';
 
 const log = childLogger('api');
 

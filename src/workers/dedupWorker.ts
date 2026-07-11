@@ -1,10 +1,10 @@
-import { resolveDedup } from '../services/dedupService.js';
-import { failJob } from '../database/repositories/jobRepository.js';
-import { sendMessage } from '../lib/sqs.js';
-import * as s3 from '../lib/s3.js';
-import config from '../config/index.js';
-import { childLogger } from '../lib/logger.js';
-import type { DedupMessage } from '../types.js';
+import { resolveDedup } from '../services/dedupService';
+import { failJob } from '../database/repositories/jobRepository';
+import { sendMessage } from '../lib/sqs';
+import * as s3 from '../lib/s3';
+import config from '../config/index';
+import { childLogger } from '../lib/logger';
+import type { DedupMessage } from '../types';
 
 const log = childLogger('worker:dedup');
 

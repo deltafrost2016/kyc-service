@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { scoreConfidence } from '../src/domain/confidence.js';
-import { runRules } from '../src/domain/rules/index.js';
-import type { Extracted } from '../src/domain/extractionSchema.js';
+import { scoreConfidence } from '../src/domain/confidence';
+import { runRules } from '../src/domain/rules/index';
+import type { Extracted } from '../src/domain/extractionSchema';
 
 const NOW = new Date('2026-07-02T00:00:00Z');
 

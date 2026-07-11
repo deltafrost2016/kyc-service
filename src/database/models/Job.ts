@@ -6,10 +6,10 @@ import {
   type InferAttributes,
   type InferCreationAttributes,
 } from 'sequelize';
-import { sequelize } from '../../lib/db.js';
-import type { Extracted } from '../../domain/extractionSchema.js';
-import type { RuleResults } from '../../domain/rules/types.js';
-import type { Confidence } from '../../domain/confidence.js';
+import { sequelize } from '../../lib/db';
+import type { Extracted } from '../../domain/extractionSchema';
+import type { RuleResults } from '../../domain/rules/types';
+import type { Confidence } from '../../domain/confidence';
 
 /** Sequelize model for the `jobs` table (per-request lifecycle). */
 export class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job>> {

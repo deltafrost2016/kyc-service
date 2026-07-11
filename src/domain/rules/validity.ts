@@ -1,7 +1,7 @@
-import { parseISODate } from './dateUtils.js';
-import { fieldApplies } from '../documentTypes.js';
-import type { Extracted } from '../extractionSchema.js';
-import type { RuleContext, RuleOutcome } from './types.js';
+import { parseISODate } from './dateUtils';
+import { fieldApplies } from '../documentTypes';
+import type { Extracted } from '../extractionSchema';
+import type { RuleContext, RuleOutcome } from './types';
 
 export const field = 'validity';
 

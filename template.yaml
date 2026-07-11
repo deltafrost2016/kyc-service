@@ -17,6 +17,34 @@ Globals:
     Runtime: nodejs20.x
     Timeout: 30
     MemorySize: 256
+    # These keys MUST be declared here for `sam local --env-vars env.json` to
+    # inject them: SAM's env-vars file can only *override* variables already
+    # declared on the function, so anything missing here is silently dropped and
+    # the container falls back to the zod defaults in src/config/index.ts (or, for
+    # the default-less queue/topic keys, fails config.parse at init). The real
+    # local values (LocalStack/Postgres hostnames, dummy creds) live in env.json;
+    # the placeholders below are only used if you forget `--env-vars env.json`.
+    Environment:
+      Variables:
+        NODE_ENV: development
+        LOG_LEVEL: info
+        DATABASE_URL: overridden-by-env-json
+        AWS_ENDPOINT_URL: overridden-by-env-json
+        AWS_REGION: ap-south-1
+        AWS_ACCESS_KEY_ID: test
+        AWS_SECRET_ACCESS_KEY: test
+        ORCHESTRATOR_QUEUE_URL: overridden-by-env-json
+        DEDUP_QUEUE_URL: overridden-by-env-json
+        ANALYSE_QUEUE_URL: overridden-by-env-json
+        RULES_QUEUE_URL: overridden-by-env-json
+        CONFIDENCE_QUEUE_URL: overridden-by-env-json
+        ANALYSIS_COMPLETE_TOPIC_ARN: overridden-by-env-json
+        STAGING_BUCKET: doc-staging
+        EMBEDDING_PROVIDER: hash
+        EMBEDDING_DIM: '1408'
+        SIMILARITY_THRESHOLD: '0.95'
+        GEMINI_API_KEY: overridden-by-env-json
+        GEMINI_MODEL: gemini-2.5-flash
 
 Resources:
   ApiFunction:
@@ -31,11 +59,10 @@ Resources:
       BuildProperties:
         Minify: false
         Target: 'node20'
-        Format: esm
+        External:
+          - pg-hstore
         EntryPoints:
           - src/lambda/apiHandler.ts
-        OutExtension:
-          - .js=.mjs
 
   OrchestratorFunction:
     Type: AWS::Serverless::Function
@@ -52,11 +79,10 @@ Resources:
       BuildProperties:
         Minify: false
         Target: 'node20'
-        Format: esm
+        External:
+          - pg-hstore
         EntryPoints:
           - src/lambda/orchestratorHandler.ts
-        OutExtension:
-          - .js=.mjs
 
   DedupFunction:
     Type: AWS::Serverless::Function
@@ -73,11 +99,10 @@ Resources:
       BuildProperties:
         Minify: false
         Target: 'node20'
-        Format: esm
+        External:
+          - pg-hstore
         EntryPoints:
           - src/lambda/dedupHandler.ts
-        OutExtension:
-          - .js=.mjs
 
   ExtractFunction:
     Type: AWS::Serverless::Function
@@ -100,11 +125,10 @@ Resources:
       BuildProperties:
         Minify: false
         Target: 'node20'
-        Format: esm
+        External:
+          - pg-hstore
         EntryPoints:
           - src/lambda/extractHandler.ts
-        OutExtension:
-          - .js=.mjs
 
   RulesFunction:
     Type: AWS::Serverless::Function
@@ -121,11 +145,10 @@ Resources:
       BuildProperties:
         Minify: false
         Target: 'node20'
-        Format: esm
+        External:
+          - pg-hstore
         EntryPoints:
           - src/lambda/rulesHandler.ts
-        OutExtension:
-          - .js=.mjs
 
   ConfidenceFunction:
     Type: AWS::Serverless::Function
@@ -142,8 +165,7 @@ Resources:
       BuildProperties:
         Minify: false
         Target: 'node20'
-        Format: esm
+        External:
+          - pg-hstore
         EntryPoints:
           - src/lambda/confidenceHandler.ts
-        OutExtension:
-          - .js=.mjs

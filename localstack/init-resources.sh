@@ -3,7 +3,7 @@
 # bucket. Runs automatically via LocalStack's ready.d hook on container start.
 set -euo pipefail
 
-REGION="us-east-1"
+REGION="ap-south-1"
 ACCOUNT="000000000000"
 
 create_queue_with_dlq() {

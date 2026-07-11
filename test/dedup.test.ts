@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock the repo and embedding seams so dedupService logic is tested in isolation.
-vi.mock('../src/database/repositories/analysisRepository.js', () => ({
+vi.mock('../src/database/repositories/analysisRepository', () => ({
   findByHash: vi.fn(),
   findNearest: vi.fn(),
   upsert: vi.fn(),
 }));
-vi.mock('../src/lib/embeddings.js', () => ({
+vi.mock('../src/lib/embeddings', () => ({
   embed: vi.fn(async () => [0.1, 0.2, 0.3]),
   toVectorLiteral: (v: number[]) => `[${v.join(',')}]`,
 }));
 
-import { resolveDedup } from '../src/services/dedupService.js';
-import { findByHash, findNearest, upsert } from '../src/database/repositories/analysisRepository.js';
-import { embed } from '../src/lib/embeddings.js';
+import { resolveDedup } from '../src/services/dedupService';
+import { findByHash, findNearest, upsert } from '../src/database/repositories/analysisRepository';
+import { embed } from '../src/lib/embeddings';
 
 const args = { contentHash: 'abc', base64: 'ZGF0YQ==' };
 

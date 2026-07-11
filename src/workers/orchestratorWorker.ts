@@ -1,9 +1,9 @@
-import { updateJob, failJob } from '../database/repositories/jobRepository.js';
-import { sendMessage } from '../lib/sqs.js';
-import { publish } from '../lib/sns.js';
-import config from '../config/index.js';
-import { childLogger } from '../lib/logger.js';
-import type { OrchestratorEvent } from '../types.js';
+import { updateJob, failJob } from '../database/repositories/jobRepository';
+import { sendMessage } from '../lib/sqs';
+import { publish } from '../lib/sns';
+import config from '../config/index';
+import { childLogger } from '../lib/logger';
+import type { OrchestratorEvent } from '../types';
 
 const log = childLogger('worker:orchestrator');
 

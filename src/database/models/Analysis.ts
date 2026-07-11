@@ -6,8 +6,8 @@ import {
   type InferAttributes,
   type InferCreationAttributes,
 } from 'sequelize';
-import { sequelize } from '../../lib/db.js';
-import type { Extracted } from '../../domain/extractionSchema.js';
+import { sequelize } from '../../lib/db';
+import type { Extracted } from '../../domain/extractionSchema';
 
 /**
  * Sequelize model for the `analyses` table (RAG knowledge base). `embedding`

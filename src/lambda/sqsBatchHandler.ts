@@ -1,5 +1,5 @@
 import type { SQSEvent, SQSBatchResponse, SQSRecord } from 'aws-lambda';
-import { childLogger } from '../lib/logger.js';
+import { childLogger } from '../lib/logger';
 
 const log = childLogger('lambda:sqsBatchHandler');
 

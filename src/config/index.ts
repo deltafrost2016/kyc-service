@@ -15,7 +15,7 @@ const schema = z.object({
   DATABASE_URL: z.string().default('postgres://postgres:postgres@localhost:5432/docanalysis'),
 
   // AWS / LocalStack. AWS_ENDPOINT_URL empty => real AWS.
-  AWS_REGION: z.string().default('us-east-1'),
+  AWS_REGION: z.string().default('ap-south-1'),
   AWS_ENDPOINT_URL: z.string().optional(),
   AWS_ACCESS_KEY_ID: z.string().default('test'),
   AWS_SECRET_ACCESS_KEY: z.string().default('test'),

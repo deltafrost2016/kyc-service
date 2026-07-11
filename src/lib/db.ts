@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
-import config from '../config/index.js';
+import pg from 'pg';
+import config from '../config/index';
 
 /**
  * Thin Postgres/Sequelize wrapper. Callers depend on `sequelize`, not on the
@@ -7,6 +8,12 @@ import config from '../config/index.js';
  */
 export const sequelize = new Sequelize(config.DATABASE_URL, {
   dialect: 'postgres',
+  // Hand Sequelize the pg driver explicitly. esbuild (via `sam build`) bundles
+  // everything into a single file with no node_modules, so Sequelize's default
+  // dynamic `require('pg')` in _loadDialectModule can't be resolved at runtime
+  // ("Please install pg package manually"). A static import + dialectModule lets
+  // esbuild bundle pg and skips the dynamic require entirely.
+  dialectModule: pg,
   logging: false,
   // Small per-container pool for Lambda-per-invocation: many warm containers
   // can run concurrently, each holding at most a couple of connections, and

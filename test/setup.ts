@@ -8,7 +8,7 @@ const defaults: Record<string, string> = {
   ANALYSE_QUEUE_URL: 'http://localhost:4566/000000000000/analyse-queue',
   RULES_QUEUE_URL: 'http://localhost:4566/000000000000/rules-queue',
   CONFIDENCE_QUEUE_URL: 'http://localhost:4566/000000000000/confidence-queue',
-  ANALYSIS_COMPLETE_TOPIC_ARN: 'arn:aws:sns:us-east-1:000000000000:analysis-complete',
+  ANALYSIS_COMPLETE_TOPIC_ARN: 'arn:aws:sns:ap-south-1:000000000000:analysis-complete',
   EMBEDDING_PROVIDER: 'hash',
   EMBEDDING_DIM: '64',
   SIMILARITY_THRESHOLD: '0.95',

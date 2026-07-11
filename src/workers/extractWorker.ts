@@ -1,11 +1,11 @@
-import { extractDocument } from '../services/extractionService.js';
-import { failJob } from '../database/repositories/jobRepository.js';
-import { upsert as upsertAnalysis } from '../database/repositories/analysisRepository.js';
-import { sendMessage } from '../lib/sqs.js';
-import * as s3 from '../lib/s3.js';
-import config from '../config/index.js';
-import { childLogger } from '../lib/logger.js';
-import type { AnalyseMessage } from '../types.js';
+import { extractDocument } from '../services/extractionService';
+import { failJob } from '../database/repositories/jobRepository';
+import { upsert as upsertAnalysis } from '../database/repositories/analysisRepository';
+import { sendMessage } from '../lib/sqs';
+import * as s3 from '../lib/s3';
+import config from '../config/index';
+import { childLogger } from '../lib/logger';
+import type { AnalyseMessage } from '../types';
 
 const log = childLogger('worker:extract');
 

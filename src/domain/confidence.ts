@@ -1,6 +1,6 @@
-import { fieldApplies } from './documentTypes.js';
-import type { Extracted } from './extractionSchema.js';
-import type { RuleResults } from './rules/types.js';
+import { fieldApplies } from './documentTypes';
+import type { Extracted } from './extractionSchema';
+import type { RuleResults } from './rules/types';
 
 /**
  * Deterministic weighted confidence score in [0,100].

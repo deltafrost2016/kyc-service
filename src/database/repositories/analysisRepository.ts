@@ -1,9 +1,9 @@
 import { QueryTypes, Sequelize } from 'sequelize';
-import { sequelize } from '../../lib/db.js';
-import { Analysis } from '../models/Analysis.js';
-import { toVectorLiteral } from '../../lib/embeddings.js';
-import type { Extracted } from '../../domain/extractionSchema.js';
-import type { AnalysisRow } from '../../types.js';
+import { sequelize } from '../../lib/db';
+import { Analysis } from '../models/Analysis';
+import { toVectorLiteral } from '../../lib/embeddings';
+import type { Extracted } from '../../domain/extractionSchema';
+import type { AnalysisRow } from '../../types';
 
 /**
  * Access to the `analyses` RAG knowledge base: exact-hash lookup, vector

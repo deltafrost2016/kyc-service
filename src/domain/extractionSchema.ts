@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DOCUMENT_TYPES } from './documentTypes.js';
+import { DOCUMENT_TYPES } from './documentTypes';
 
 /**
  * The 6 extracted fields. Two representations kept in sync:
