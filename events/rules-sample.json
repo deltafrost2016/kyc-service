@@ -1,0 +1,20 @@
+{
+  "Records": [
+    {
+      "messageId": "44444444-4444-4444-4444-444444444444",
+      "receiptHandle": "sample-receipt-handle",
+      "body": "{\"jobId\":\"610c3a5d-fdeb-435c-96ac-3ae1494aefea\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1700000000000",
+        "SenderId": "000000000000",
+        "ApproximateFirstReceiveTimestamp": "1700000000000"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "sample-md5",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:ap-south-1:000000000000:rules-queue",
+      "awsRegion": "ap-south-1"
+    }
+  ]
+}
