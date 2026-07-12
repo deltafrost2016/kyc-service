@@ -41,6 +41,10 @@ Globals:
     Runtime: nodejs20.x
     Timeout: 30
     MemorySize: 256
+    # SAM resolves CodeUri/EntryPoints relative to this template's own
+    # directory (infra/), not the repo root — without this, esbuild looks for
+    # infra/src/lambda/*.ts instead of the real src/lambda/*.ts one level up.
+    CodeUri: ../
     Environment:
       Variables:
         NODE_ENV: production
