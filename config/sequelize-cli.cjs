@@ -8,6 +8,9 @@ require('dotenv').config();
 const common = {
   use_env_variable: 'DATABASE_URL',
   dialect: 'postgres',
+  // Same DB_SSL flag as src/lib/db.ts — sequelize-cli parses DATABASE_URL the
+  // same way Sequelize does, so a `?sslmode=require` query param is ignored.
+  dialectOptions: process.env.DB_SSL === 'true' ? { ssl: { require: true, rejectUnauthorized: false } } : {},
 };
 
 module.exports = {

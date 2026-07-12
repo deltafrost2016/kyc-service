@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { GoogleAuth } from 'google-auth-library';
-import config from '../config/index';
+import { config } from '../config/index.js';
 
 /**
  * Multimodal image-embedding seam for RAG dedup. `embed(base64, mimeType)`

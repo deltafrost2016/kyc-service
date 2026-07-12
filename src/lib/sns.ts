@@ -1,5 +1,5 @@
 import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
-import config from '../config/index';
+import { config } from '../config/index.js';
 
 /** SNS publish helper for the analysis-complete topic. */
 const client = new SNSClient({

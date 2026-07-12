@@ -3,7 +3,7 @@ import type { Server } from 'node:http';
 import analyseRoute from './routes/analyse';
 import jobsRoute from './routes/jobs';
 import { childLogger } from '../lib/logger';
-import config from '../config/index';
+import { config } from '../config/index.js';
 
 const log = childLogger('api');
 

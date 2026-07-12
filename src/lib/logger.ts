@@ -1,5 +1,5 @@
 import pino, { type Logger } from 'pino';
-import config from '../config/index';
+import { config } from '../config/index.js';
 
 // Plain structured-JSON pino. No `pino-pretty` transport: pino transports run
 // in a worker thread and resolve the target module at runtime, which esbuild's

@@ -4,7 +4,7 @@ import { sha256 } from '../../lib/hash';
 import * as s3 from '../../lib/s3';
 import { sendMessage } from '../../lib/sqs';
 import { createJob } from '../../database/repositories/jobRepository';
-import config from '../../config/index';
+import { config } from '../../config/index.js';
 import { childLogger } from '../../lib/logger';
 
 const log = childLogger('api:analyse');

@@ -13,6 +13,12 @@ const schema = z.object({
 
   // Postgres
   DATABASE_URL: z.string().default('postgres://postgres:postgres@localhost:5432/docanalysis'),
+  // Sequelize parses DATABASE_URL itself and forwards querystring params like
+  // `?sslmode=require` into dialectOptions verbatim — pg never reads that key
+  // to negotiate TLS, so it's a silent no-op. This flag drives an explicit
+  // dialectOptions.ssl instead (see lib/db.ts). Needed for RDS since it's
+  // publicly reachable and doesn't enforce SSL by default.
+  DB_SSL: z.coerce.boolean().default(false),
 
   // AWS / LocalStack. AWS_ENDPOINT_URL empty => real AWS.
   AWS_REGION: z.string().default('ap-south-1'),

@@ -1,7 +1,7 @@
 import { scoreConfidence } from '../domain/confidence';
 import { getJob, failJob } from '../database/repositories/jobRepository';
 import { sendMessage } from '../lib/sqs';
-import config from '../config/index';
+import { config } from '../config/index.js';
 import { childLogger } from '../lib/logger';
 import type { JobStageMessage } from '../types';
 

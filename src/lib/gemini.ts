@@ -1,5 +1,5 @@
 import { GoogleGenAI, type Content } from '@google/genai';
-import config from '../config/index';
+import { config } from '../config/index.js';
 
 /**
  * Gemini client wrapper. Only exposes `generateJson` — the single capability the

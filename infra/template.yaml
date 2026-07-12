@@ -1,0 +1,308 @@
+# Production SAM template — deployed by .github/workflows/deploy.yml via
+# `sam deploy`. This is the real IaC for the six Lambda functions; the
+# root-level template.yaml is local-dev only (LocalStack) and is unrelated.
+#
+# Postgres is RDS (free tier: db.t3.micro, 20GB gp2, 750 instance-hrs/month —
+# check the Billing > Free Tier page for your account's actual eligibility
+# window, since AWS revised the terms in 2024/2025). The RDS instance is
+# PUBLICLY ACCESSIBLE and Lambda stays VPC-less — deliberately, so the
+# extract Lambda can still reach the public Gemini API. Lambda-in-a-VPC can't
+# reach the internet without a NAT Gateway (~$32/month minimum), which would
+# defeat the free-tier goal; a private RDS + NAT setup is the "correct"
+# production pattern but is intentionally not what this learning stack does.
+# The DB is locked down by security group (5432 only) + a strong generated
+# password + enforced TLS (sslmode=require) — acceptable for a disposable
+# learning stack, not a pattern to carry into a real prod deployment with
+# real data.
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: kyc-service — production Lambda pipeline (api, orchestrator, dedup, extract, rules, confidence)
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Your account's default VPC (VPC console > Your VPCs)
+  PublicSubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: At least 2 subnets (different AZs) from that VPC — RDS subnet groups require 2+ AZs even for a single-AZ instance
+  DbMasterUsername:
+    Type: String
+    Default: kycadmin
+  DbMasterPassword:
+    Type: String
+    NoEcho: true
+    MinLength: 12
+  GeminiApiKey:
+    Type: String
+    NoEcho: true
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 30
+    MemorySize: 256
+    Environment:
+      Variables:
+        NODE_ENV: production
+        LOG_LEVEL: info
+        DATABASE_URL: !Sub 'postgres://${DbMasterUsername}:${DbMasterPassword}@${Database.Endpoint.Address}:${Database.Endpoint.Port}/docanalysis'
+        DB_SSL: 'true'
+        ORCHESTRATOR_QUEUE_URL: !Ref OrchestratorQueue
+        DEDUP_QUEUE_URL: !Ref DedupQueue
+        ANALYSE_QUEUE_URL: !Ref AnalyseQueue
+        RULES_QUEUE_URL: !Ref RulesQueue
+        CONFIDENCE_QUEUE_URL: !Ref ConfidenceQueue
+        ANALYSIS_COMPLETE_TOPIC_ARN: !Ref AnalysisCompleteTopic
+        STAGING_BUCKET: !Ref StagingBucket
+        EMBEDDING_PROVIDER: hash
+        EMBEDDING_DIM: '1408'
+        SIMILARITY_THRESHOLD: '0.95'
+        GEMINI_API_KEY: !Ref GeminiApiKey
+        GEMINI_MODEL: gemini-2.5-flash
+        # AWS_REGION is a Lambda-reserved env var (set automatically) and
+        # AWS_ACCESS_KEY_ID/SECRET/AWS_ENDPOINT_URL are LocalStack-only knobs
+        # the app code never reads for real AWS clients — omit all four here;
+        # the execution role's credentials are picked up automatically.
+
+Resources:
+  # ---- RDS Postgres (pgvector, publicly accessible — see disclaimer above) ----
+  DbSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: kyc-service RDS subnet group
+      SubnetIds: !Ref PublicSubnetIds
+
+  DbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow Postgres from anywhere (learning stack — see template disclaimer)
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+
+  Database:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
+    Properties:
+      Engine: postgres
+      EngineVersion: '15.7' # >=15.2 required for pgvector on RDS
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: '20'
+      StorageType: gp2
+      DBName: docanalysis
+      MasterUsername: !Ref DbMasterUsername
+      MasterUserPassword: !Ref DbMasterPassword
+      PubliclyAccessible: true
+      MultiAZ: false
+      BackupRetentionPeriod: 1
+      DeletionProtection: false
+      DBSubnetGroupName: !Ref DbSubnetGroup
+      VPCSecurityGroups:
+        - !GetAtt DbSecurityGroup.GroupId
+
+  # ---- S3 staging (raw doc bytes, deleted right after dedup/extraction) ----
+  StagingBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireStrayObjects
+            Status: Enabled
+            ExpirationInDays: 1 # belt-and-suspenders in case a job fails before its own cleanup runs
+
+  # ---- SQS: one queue + one DLQ per stage ----
+  OrchestratorDLQ:
+    Type: AWS::SQS::Queue
+  OrchestratorQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 60
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt OrchestratorDLQ.Arn
+        maxReceiveCount: 3
+
+  DedupDLQ:
+    Type: AWS::SQS::Queue
+  DedupQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 60
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DedupDLQ.Arn
+        maxReceiveCount: 3
+
+  AnalyseDLQ:
+    Type: AWS::SQS::Queue
+  AnalyseQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 150 # extract stage's Lambda timeout is 120s (Gemini call)
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt AnalyseDLQ.Arn
+        maxReceiveCount: 3
+
+  RulesDLQ:
+    Type: AWS::SQS::Queue
+  RulesQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 60
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt RulesDLQ.Arn
+        maxReceiveCount: 3
+
+  ConfidenceDLQ:
+    Type: AWS::SQS::Queue
+  ConfidenceQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 60
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt ConfidenceDLQ.Arn
+        maxReceiveCount: 3
+
+  # ---- SNS: completion notification ----
+  AnalysisCompleteTopic:
+    Type: AWS::SNS::Topic
+
+  # ---- Lambda functions ----
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/lambda/apiHandler.handler
+      Events:
+        Api:
+          Type: HttpApi
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref StagingBucket
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt OrchestratorQueue.QueueName
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'node20'
+        External: [pg-hstore]
+        EntryPoints: [src/lambda/apiHandler.ts]
+
+  OrchestratorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/lambda/orchestratorHandler.handler
+      Events:
+        Sqs:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt OrchestratorQueue.Arn
+            BatchSize: 5
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt DedupQueue.QueueName
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt AnalyseQueue.QueueName
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt RulesQueue.QueueName
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt ConfidenceQueue.QueueName
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt AnalysisCompleteTopic.TopicName
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'node20'
+        External: [pg-hstore]
+        EntryPoints: [src/lambda/orchestratorHandler.ts]
+
+  DedupFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/lambda/dedupHandler.handler
+      Events:
+        Sqs:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt DedupQueue.Arn
+            BatchSize: 5
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref StagingBucket
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'node20'
+        External: [pg-hstore]
+        EntryPoints: [src/lambda/dedupHandler.ts]
+
+  ExtractFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/lambda/extractHandler.handler
+      Timeout: 120
+      Events:
+        Sqs:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt AnalyseQueue.Arn
+            BatchSize: 2
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref StagingBucket
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'node20'
+        External: [pg-hstore]
+        EntryPoints: [src/lambda/extractHandler.ts]
+
+  RulesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/lambda/rulesHandler.handler
+      Events:
+        Sqs:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt RulesQueue.Arn
+            BatchSize: 5
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'node20'
+        External: [pg-hstore]
+        EntryPoints: [src/lambda/rulesHandler.ts]
+
+  ConfidenceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/lambda/confidenceHandler.handler
+      Events:
+        Sqs:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ConfidenceQueue.Arn
+            BatchSize: 5
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'node20'
+        External: [pg-hstore]
+        EntryPoints: [src/lambda/confidenceHandler.ts]
+
+Outputs:
+  ApiUrl:
+    Description: Invoke URL for POST /analyse and GET /jobs/:id
+    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com'
+  StagingBucketName:
+    Value: !Ref StagingBucket
+  DbEndpoint:
+    Description: RDS hostname only (no credentials) — used by deploy.yml to build DATABASE_URL for migrations
+    Value: !GetAtt Database.Endpoint.Address

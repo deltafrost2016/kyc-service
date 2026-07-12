@@ -2,7 +2,7 @@ import { resolveDedup } from '../services/dedupService';
 import { failJob } from '../database/repositories/jobRepository';
 import { sendMessage } from '../lib/sqs';
 import * as s3 from '../lib/s3';
-import config from '../config/index';
+import { config } from '../config/index.js';
 import { childLogger } from '../lib/logger';
 import type { DedupMessage } from '../types';
 

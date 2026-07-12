@@ -3,7 +3,7 @@ import { failJob } from '../database/repositories/jobRepository';
 import { upsert as upsertAnalysis } from '../database/repositories/analysisRepository';
 import { sendMessage } from '../lib/sqs';
 import * as s3 from '../lib/s3';
-import config from '../config/index';
+import { config } from '../config/index.js';
 import { childLogger } from '../lib/logger';
 import type { AnalyseMessage } from '../types';
 
