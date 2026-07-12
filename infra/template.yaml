@@ -79,7 +79,7 @@ Resources:
   DbSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow Postgres from anywhere (learning stack — see template disclaimer)
+      GroupDescription: Allow Postgres from anywhere. Learning stack, see template disclaimer
       VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
