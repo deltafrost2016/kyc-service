@@ -92,7 +92,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       Engine: postgres
-      EngineVersion: '15.7' # >=15.2 required for pgvector on RDS
+      EngineVersion: '17.8'
       DBInstanceClass: db.t3.micro
       AllocatedStorage: '20'
       StorageType: gp2
