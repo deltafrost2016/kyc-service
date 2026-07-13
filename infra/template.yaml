@@ -235,6 +235,8 @@ Resources:
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref StagingBucket
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt OrchestratorQueue.QueueName
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -257,6 +259,8 @@ Resources:
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref StagingBucket
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt OrchestratorQueue.QueueName
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -275,6 +279,9 @@ Resources:
           Properties:
             Queue: !GetAtt RulesQueue.Arn
             BatchSize: 5
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt OrchestratorQueue.QueueName
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -293,6 +300,9 @@ Resources:
           Properties:
             Queue: !GetAtt ConfidenceQueue.Arn
             BatchSize: 5
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt OrchestratorQueue.QueueName
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
