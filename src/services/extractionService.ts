@@ -1,4 +1,4 @@
-import { generateJson } from '../lib/gemini';
+import { generateJson } from '../lib/llm/index.js';
 import {
   extractedZodSchema,
   geminiResponseSchema,
@@ -39,23 +39,12 @@ export const extractDocument = async ({
   base64: string;
   mimeType: string;
 }): Promise<Extracted> => {
-  const contents = [
-    {
-      role: 'user',
-      parts: [
-        { text: PROMPT },
-        {
-          inlineData: {
-            mimeType,
-            data: base64,
-          },
-        },
-      ],
-    },
-  ];
-
   const raw = (await generateJson({
-    contents,
+    prompt: PROMPT,
+    image: {
+      mimeType,
+      base64,
+    },
     responseSchema: geminiResponseSchema as unknown as Record<string, unknown>,
   })) as Record<string, unknown>;
 

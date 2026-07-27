@@ -43,8 +43,15 @@ Globals:
         EMBEDDING_PROVIDER: hash
         EMBEDDING_DIM: '1408'
         SIMILARITY_THRESHOLD: '0.95'
+        LLM_PROVIDER: gemini
         GEMINI_API_KEY: overridden-by-env-json
-        GEMINI_MODEL: gemini-2.5-flash
+        GEMINI_MODEL: gemma-4-31b-it
+        ANTHROPIC_API_KEY: overridden-by-env-json
+        CLAUDE_MODEL: claude-haiku-4-5
+        OPENAI_API_KEY: overridden-by-env-json
+        OPENAI_MODEL: gpt-4o-mini
+        OLLAMA_BASE_URL: overridden-by-env-json
+        OLLAMA_MODEL: gemma3:12b
 
 Resources:
   ApiFunction:

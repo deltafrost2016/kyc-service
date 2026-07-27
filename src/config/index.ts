@@ -39,9 +39,24 @@ const schema = z.object({
   // S3 staging
   STAGING_BUCKET: z.string().default('doc-staging'),
 
+  // LLM extraction provider — swap without touching services/extractionService.ts
+  LLM_PROVIDER: z.enum(['gemini', 'claude', 'openai', 'ollama']).default('gemini'),
+
   // Gemini
   GEMINI_API_KEY: z.string().default(''),
-  GEMINI_MODEL: z.string().default('gemini-2.5-flash'),
+  GEMINI_MODEL: z.string().default('gemma-3-4b-it'),
+
+  // Claude (only used when LLM_PROVIDER=claude)
+  ANTHROPIC_API_KEY: z.string().default(''),
+  CLAUDE_MODEL: z.string().default('claude-haiku-4-5'),
+
+  // OpenAI (only used when LLM_PROVIDER=openai)
+  OPENAI_API_KEY: z.string().default(''),
+  OPENAI_MODEL: z.string().default('gpt-4o-mini'),
+
+  // Ollama (only used when LLM_PROVIDER=ollama)
+  OLLAMA_BASE_URL: z.string().default('http://localhost:11434'),
+  OLLAMA_MODEL: z.string().default('gemma3:12b'),
 
   // Embeddings / RAG dedup
   EMBEDDING_PROVIDER: z.enum(['vertex', 'hash']).default('hash'),

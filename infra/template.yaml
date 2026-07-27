@@ -62,7 +62,7 @@ Globals:
         EMBEDDING_DIM: '1408'
         SIMILARITY_THRESHOLD: '0.95'
         GEMINI_API_KEY: !Ref GeminiApiKey
-        GEMINI_MODEL: gemini-2.5-flash
+        GEMINI_MODEL: gemma-4-31b-it
         # AWS_REGION is a Lambda-reserved env var (set automatically) and
         # AWS_ACCESS_KEY_ID/SECRET/AWS_ENDPOINT_URL are LocalStack-only knobs
         # the app code never reads for real AWS clients — omit all four here;

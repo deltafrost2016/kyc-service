@@ -58,12 +58,12 @@ lives elsewhere.
 Install these on Mac, Windows, or Linux — the rest of the setup is identical across all
 three once they're in place:
 
-| Tool | Why | Install |
-| --- | --- | --- |
-| **Node.js 20+** | runtime for the app and tests | [nodejs.org](https://nodejs.org) or a version manager (`nvm`, `fnm`, `volta`) |
-| **Docker Desktop** (Mac/Windows) or **Docker Engine + Compose plugin** (Linux) | runs Postgres (pgvector) + LocalStack | [docs.docker.com/get-docker](https://docs.docker.com/get-docker/) |
-| **AWS SAM CLI** | runs the Lambda handlers locally against LocalStack for end-to-end testing | [SAM CLI install guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) — macOS: `brew install aws-sam-cli`; Windows: the `.msi` installer from that guide; Linux: the guide's install script |
-| **git** | clone the repo | — |
+| Tool                                                                           | Why                                                                        | Install                                                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Node.js 20+**                                                                | runtime for the app and tests                                              | [nodejs.org](https://nodejs.org) or a version manager (`nvm`, `fnm`, `volta`)                                                                                                                                                                      |
+| **Docker Desktop** (Mac/Windows) or **Docker Engine + Compose plugin** (Linux) | runs Postgres (pgvector) + LocalStack                                      | [docs.docker.com/get-docker](https://docs.docker.com/get-docker/)                                                                                                                                                                                  |
+| **AWS SAM CLI**                                                                | runs the Lambda handlers locally against LocalStack for end-to-end testing | [SAM CLI install guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) — macOS: `brew install aws-sam-cli`; Windows: the `.msi` installer from that guide; Linux: the guide's install script |
+| **git**                                                                        | clone the repo                                                             | —                                                                                                                                                                                                                                                  |
 
 Notes:
 
@@ -162,13 +162,13 @@ Docker or SAM required.
 
 See `.env.example` (and `env.json` for the SAM-local equivalents). Key settings:
 
-| Var | Purpose |
-| --- | --- |
-| `GEMINI_API_KEY` / `GEMINI_MODEL` | Google AI Studio key; default `gemini-2.5-flash` |
-| `AWS_ENDPOINT_URL` | LocalStack endpoint; unset ⇒ real AWS |
-| `EMBEDDING_PROVIDER` | `hash` (local stub, default) or `vertex` (real multimodal) |
-| `EMBEDDING_DIM` | Vector dimension (must match the migration; default 1408) |
-| `SIMILARITY_THRESHOLD` | Cosine similarity for a semantic cache hit (default 0.95) |
+| Var                               | Purpose                                                    |
+| --------------------------------- | ---------------------------------------------------------- |
+| `GEMINI_API_KEY` / `GEMINI_MODEL` | Google AI Studio key; default `gemma-4-31b-it`             |
+| `AWS_ENDPOINT_URL`                | LocalStack endpoint; unset ⇒ real AWS                      |
+| `EMBEDDING_PROVIDER`              | `hash` (local stub, default) or `vertex` (real multimodal) |
+| `EMBEDDING_DIM`                   | Vector dimension (must match the migration; default 1408)  |
+| `SIMILARITY_THRESHOLD`            | Cosine similarity for a semantic cache hit (default 0.95)  |
 
 All config is parsed once through a zod schema in `src/config/index.ts` — never read
 `process.env` elsewhere in the app code.

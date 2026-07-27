@@ -29,6 +29,7 @@
     "sam:local:invoke:confidence": "sam local invoke ConfidenceFunction --docker-network kyc-service_default --env-vars env.json -e events/confidence-sample.json"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
     "@aws-sdk/client-s3": "^3.658.0",
     "@aws-sdk/client-sns": "^3.658.0",
     "@aws-sdk/client-sqs": "^3.658.0",
@@ -37,6 +38,7 @@
     "dotenv": "^17.4.2",
     "express": "^4.21.0",
     "google-auth-library": "^9.14.0",
+    "openai": "^4.104.0",
     "pg": "^8.13.0",
     "pino": "^9.4.0",
     "pino-pretty": "^11.2.2",

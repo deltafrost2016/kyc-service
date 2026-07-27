@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('../src/lib/gemini', () => ({
+import { extractDocument } from '../src/services/extractionService';
+import { generateJson } from '../src/lib/llm/index';
+import { extractedZodSchema } from '../src/domain/extractionSchema';
+
+vi.mock('../src/lib/llm/index', () => ({
   generateJson: vi.fn(),
 }));
-
-import { extractDocument } from '../src/services/extractionService';
-import { generateJson } from '../src/lib/gemini';
-import { extractedZodSchema } from '../src/domain/extractionSchema';
 
 const base = {
   documentNumber: 'A1234567',
@@ -23,7 +23,10 @@ beforeEach(() => vi.clearAllMocks());
 describe('extractDocument', () => {
   it('returns validated fields for a well-formed model response', async () => {
     vi.mocked(generateJson).mockResolvedValue(base);
-    const out = await extractDocument({ base64: 'x', mimeType: 'image/jpeg' });
+    const out = await extractDocument({
+      base64: 'x',
+      mimeType: 'image/jpeg',
+    });
     expect(out).toEqual(base);
   });
 
@@ -34,20 +37,35 @@ describe('extractDocument', () => {
       validityDate: null,
       documentType: 'PAN',
     });
-    const out = await extractDocument({ base64: 'x', mimeType: 'image/jpeg' });
+    const out = await extractDocument({
+      base64: 'x',
+      mimeType: 'image/jpeg',
+    });
     expect(out.mothersName).toBeNull();
     expect(out.validityDate).toBeNull();
   });
 
   it('coerces document type casing/spacing to the enum', async () => {
-    vi.mocked(generateJson).mockResolvedValue({ ...base, documentType: 'driving licence' });
-    const out = await extractDocument({ base64: 'x', mimeType: 'image/jpeg' });
+    vi.mocked(generateJson).mockResolvedValue({
+      ...base,
+      documentType: 'driving licence',
+    });
+    const out = await extractDocument({
+      base64: 'x',
+      mimeType: 'image/jpeg',
+    });
     expect(out.documentType).toBe('DRIVING_LICENCE');
   });
 
   it('coerces an unknown document type to null', async () => {
-    vi.mocked(generateJson).mockResolvedValue({ ...base, documentType: 'ration card' });
-    const out = await extractDocument({ base64: 'x', mimeType: 'image/jpeg' });
+    vi.mocked(generateJson).mockResolvedValue({
+      ...base,
+      documentType: 'ration card',
+    });
+    const out = await extractDocument({
+      base64: 'x',
+      mimeType: 'image/jpeg',
+    });
     expect(out.documentType).toBeNull();
   });
 });
